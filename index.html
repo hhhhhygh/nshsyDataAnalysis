@@ -1112,7 +1112,7 @@
                 <div id="playerChart"></div>
                 <div class="loading-overlay" id="loadingOverlay">
                     <div class="spinner"></div>
-                    <div class="loading-text">加载玩家数据中...</div>
+                    <div class="loading-text">请上传数据...</div>
                 </div>
             </div>
         </div>
@@ -1283,7 +1283,10 @@
                         let benbang = false;
                         // 计算新增的三个指标
                         playerData = calculateAdvancedMetrics(playerData);
-                        // 验证玩家里有没有国服马超
+                        if (playerData.length<=1){
+                            benbang = true;
+                        }
+                        // 验证玩家里有没有本帮的ID
                         for (let i = 0; i < playerData.length; i++) {
                         if(playerData[i]["玩家名字"] == "九九啊" || playerData[i]["玩家名字"] == '"九九啊"' || playerData[i]["玩家名字"] == '"长相思丶何求"'|| playerData[i]["玩家名字"] == "长相思丶何求"
                          || playerData[i]["玩家名字"] == '"猛丷"'|| playerData[i]["玩家名字"] == "猛丷"){
