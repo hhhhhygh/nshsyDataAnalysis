@@ -277,7 +277,7 @@
             background: rgba(20, 40, 80, 0.8);
             border: 1px solid rgba(100, 180, 255, 0.3);
             color: #e0f0ff;
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             font-size: 1.05rem;
             outline: none;
@@ -580,6 +580,14 @@
             margin-bottom: 15px;
         }
 
+        /* 新增：排序方向控制 */
+        .sort-direction-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
         .display-label {
             font-size: 1.05rem;
             color: #88ccff;
@@ -598,6 +606,24 @@
         }
 
         .display-input:focus {
+            border-color: #4a9cff;
+            box-shadow: 0 0 8px rgba(100, 180, 255, 0.5);
+        }
+
+        /* 排序方向选择器样式 */
+        #sortDirection {
+            width: 100%;
+            background: rgba(20, 40, 80, 0.8);
+            border: 1px solid rgba(100, 180, 255, 0.3);
+            color: #e0f0ff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #sortDirection:focus {
             border-color: #4a9cff;
             box-shadow: 0 0 8px rgba(100, 180, 255, 0.5);
         }
@@ -701,6 +727,13 @@
         .chart-title i {
             margin-right: 10px;
             color: #4a9cff;
+        }
+
+        /* 排序方向指示器 */
+        .sort-indicator {
+            margin-left: 10px;
+            font-size: 0.9rem;
+            color: #ffcc66;
         }
 
         @media (max-width: 1200px) {
@@ -836,6 +869,14 @@
             padding: 0;
             pointer-events: none;
         }
+<!--        #chart-container {-->
+<!--            overflow-y: auto;-->
+<!--            max-height: 80vh; /* 限制最大高度 */-->
+<!--            min-height: 400px; /* 最小高度 */-->
+<!--            transition: height 0.3s ease; /* 高度变化动画 */-->
+<!--            border: 1px solid rgba(100, 150, 255, 0.3);-->
+<!--            border-radius: 8px;-->
+<!--        }-->
     </style>
 </head>
 <body>
@@ -982,6 +1023,15 @@
                             <option value="每命拆塔">每命拆塔</option>
                         </select>
 
+                        <!-- 新增排序方向控制 -->
+                        <div class="sort-direction-control">
+<!--                            <span class="display-label">排序方向:</span>-->
+                            <select id="sortDirection">
+                                <option value="desc">降序</option>
+                                <option value="asc">升序</option>
+                            </select>
+                        </div>
+
                         <!-- 添加显示数量控制 -->
                         <div class="display-control">
                             <span class="display-label">显示数量:</span>
@@ -998,6 +1048,7 @@
                         <div class="metric-content">
                             <div class="metric-info">
                                 <i class="fas fa-fire"></i> <span id="currentMetric">对玩家伤害</span>
+                                <span class="sort-indicator" id="sortIndicator">▼</span>
                             </div>
                             <div class="metric-selector">
                                 <div class="metric-option active" data-metric="对玩家伤害" title="对玩家伤害">
@@ -1107,8 +1158,8 @@
                 <div class="chart-title" id="chartTitle">
                     <i class="fas fa-chart-bar"></i>
                     <span id="chartTitleText"><span id="chartMetric">对玩家伤害</span></span>
+                    <span class="sort-indicator" id="chartSortIndicator">▼</span>
                 </div>
-<!--                <div class="chart-tips"><i class="fas fa-info-circle"></i> 数据按降序排列，最大值显示在最上方</div>-->
                 <div id="playerChart"></div>
                 <div class="loading-overlay" id="loadingOverlay">
                     <div class="spinner"></div>
@@ -1261,6 +1312,7 @@
         let currentSort = '对玩家伤害';
         let currentMetric = '对玩家伤害';
         let displayCount = 10; // 默认显示10个玩家
+        let sortDirection = 'desc'; // 默认降序排序
 
         // 监听文件选择
         fileInput.addEventListener('change', function(e) {
@@ -1724,6 +1776,17 @@
             document.getElementById('chartTitleText').innerHTML =
                 `<span id="chartMetric">${metricNames[currentMetric]}</span>`;
 
+            // 更新排序指示器
+            const sortIndicator = document.getElementById('sortIndicator');
+            const chartSortIndicator = document.getElementById('chartSortIndicator');
+            if (sortDirection === 'desc') {
+                sortIndicator.textContent = '▼';
+                chartSortIndicator.textContent = '▼';
+            } else {
+                sortIndicator.textContent = '▲';
+                chartSortIndicator.textContent = '▲';
+            }
+
             // 更新当前指标显示
             document.getElementById('currentMetric').textContent = metricNames[currentMetric];
             document.querySelector('#currentMetric').previousElementSibling.className = metricIcons[currentMetric];
@@ -1735,13 +1798,34 @@
                 return campMatch && jobMatch;
             });
 
-            // 降序排序数据
-            filteredData.sort((a, b) => b[currentSort] - a[currentSort]);
+<!--            // 添加容器高度调整逻辑-->
+<!--            const chartContainer = document.getElementById('chart-container');-->
+<!--            const idealBarHeight = 30; // 每条数据理想高度-->
+<!--            const minChartHeight = 400; // 最小图表高度-->
+<!--            const baseHeight = 200; // 额外空间用于标题等-->
+
+<!--            // 动态调整图表容器高度-->
+<!--            let containerHeight;-->
+<!--            if (displayCount > 20) {-->
+<!--                containerHeight = Math.max(minChartHeight,-->
+<!--                                          displayCount * idealBarHeight + baseHeight);-->
+<!--            } else {-->
+<!--                containerHeight = minChartHeight;-->
+<!--            }-->
+<!--            //chartContainer.style.height = `${containerHeight}px`;-->
+<!--            myChart.resize(); // 重新调整图表尺寸-->
+
+            // 根据排序方向排序数据（升序时最小值在前）
+            if (sortDirection === 'desc') {
+                filteredData.sort((a, b) => b[currentSort] - a[currentSort]);
+            } else {
+                filteredData.sort((a, b) => a[currentSort] - b[currentSort]);
+            }
 
             // 根据设置显示玩家数量
             const displayData = filteredData.slice(0, displayCount);
 
-            // 准备图表数据
+            // 准备图表数据（升序时保持原始顺序）
             const categories = displayData.map(player => player.玩家名字);
             const data = displayData.map(player => player[currentMetric]);
 
@@ -1779,15 +1863,48 @@
                     }
                 },
                 grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
+                    left: '1%',
+                    right: '5%',
+                    bottom: '7%',
                     top: '1%',
                     containLabel: true
                 },
+                // 添加滚动条组件
+                dataZoom: displayCount > 20 ? [{
+                    type: 'slider', // 垂直滚动条
+                    yAxisIndex: 0,
+                    orient: 'vertical', // 垂直方向
+                    start: 0,
+                    end: Math.floor(100 * 20 / displayCount),
+                    right: 5,
+                    top: 50,
+                    bottom: 30,
+                    height: '80%',
+                    brushSelect: false,
+                    backgroundColor: 'rgba(30, 70, 140, 0.2)',
+                    fillerColor: 'rgba(100, 130, 220, 0.4)',
+                    handleStyle: {
+                        color: '#667799',
+                        borderWidth: 0
+                    },
+                    textStyle: {
+                        color: '#ccc'
+                    }
+
+                },
+                {
+                type: 'inside',
+                yAxisIndex: [0, 1],
+                 // 滚轮是否触发缩放
+                zoomOnMouseWheel: false,
+                // 鼠标滚轮触发滚动
+                moveOnMouseMove: true,
+                moveOnMouseWheel: true,
+                }
+                ] : [],
                 xAxis: {
                     type: 'value',
-                    name: '数值',
+                    name: '',
                     nameTextStyle: {
                         color: '#88ccff'
                     },
@@ -1813,11 +1930,13 @@
                             color: 'rgba(100, 180, 255, 0.1)'
                         }
                     },
-                    max: maxValue * 1.1
+                    max: Math.ceil(maxValue * 1.05)
                 },
                 yAxis: {
                     type: 'category',
                     data: categories,
+                    inverse: true,
+                    // 移除inverse属性
                     axisLabel: {
                         color: '#e0f0ff',
                         fontSize: 14,
@@ -1827,9 +1946,8 @@
                         lineStyle: {
                             color: 'rgba(100, 180, 255, 0.3)'
                         }
-                    },
-                    // 降序排列，最大值在最上面
-                    inverse: true
+                    }
+                    // 删除原有的inverse设置
                 },
                 series: [
                     {
@@ -1922,6 +2040,12 @@
             // 更新指标按钮的激活状态
             updateMetricActiveState(this.value);
 
+            renderChart();
+        });
+
+        // 初始化排序方向选择事件
+        document.getElementById('sortDirection').addEventListener('change', function() {
+            sortDirection = this.value;
             renderChart();
         });
 
