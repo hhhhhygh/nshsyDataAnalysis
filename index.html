@@ -1429,9 +1429,13 @@
                 // 每命承伤 = 承受伤害 / (重伤 + 1)
                 player['每命承伤'] = Math.round(player.承受伤害 / (player.重伤 + 1));
 
-                // 击杀效率 = 对玩家伤害 / (击败 + 1)
-                player['击杀效率'] = Math.round(player.对玩家伤害 / (player.击败 + 1));
-
+                // 击杀效率 = 对玩家伤害 / (击败)
+                if(player.击败==0){
+                
+                }
+                else{
+                player['击杀效率'] = Math.round(player.对玩家伤害 / (player.击败));
+                }
                 // 每命拆塔 = 对建筑伤害 / (重伤 + 1)
                 player['每命拆塔'] = Math.round(player.对建筑伤害 / (player.重伤 + 1));
 
