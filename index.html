@@ -869,17 +869,15 @@
             padding: 0;
             pointer-events: none;
         }
-<!--        #chart-container {-->
-<!--            overflow-y: auto;-->
-<!--            max-height: 80vh; /* 限制最大高度 */-->
-<!--            min-height: 400px; /* 最小高度 */-->
-<!--            transition: height 0.3s ease; /* 高度变化动画 */-->
-<!--            border: 1px solid rgba(100, 150, 255, 0.3);-->
-<!--            border-radius: 8px;-->
-<!--        }-->
+
     </style>
 </head>
 <body>
+<!--
+  作者：长相思丶何求
+  日期：2025-07-29
+  描述：用于逆水寒手游联赛数据分析。数据不能体现选手的全部表现，但是有它存在的价值，需要借助图表客观理性分析。
+-->
     <div class="container">
         <header>
             <h1>谁尽力谁犯罪，谁的打法不团队</h1>
@@ -1797,23 +1795,6 @@
                 const jobMatch = currentJob === 'all' || player.职业 === currentJob;
                 return campMatch && jobMatch;
             });
-
-<!--            // 添加容器高度调整逻辑-->
-<!--            const chartContainer = document.getElementById('chart-container');-->
-<!--            const idealBarHeight = 30; // 每条数据理想高度-->
-<!--            const minChartHeight = 400; // 最小图表高度-->
-<!--            const baseHeight = 200; // 额外空间用于标题等-->
-
-<!--            // 动态调整图表容器高度-->
-<!--            let containerHeight;-->
-<!--            if (displayCount > 20) {-->
-<!--                containerHeight = Math.max(minChartHeight,-->
-<!--                                          displayCount * idealBarHeight + baseHeight);-->
-<!--            } else {-->
-<!--                containerHeight = minChartHeight;-->
-<!--            }-->
-<!--            //chartContainer.style.height = `${containerHeight}px`;-->
-<!--            myChart.resize(); // 重新调整图表尺寸-->
 
             // 根据排序方向排序数据（升序时最小值在前）
             if (sortDirection === 'desc') {
